@@ -40,7 +40,7 @@ task GetBclBucketSize {
   }
 
   command <<< 
-    gsutil du -s ${input_bcl_directory} | awk '{print $1/1024/1024/1024}' > input_bcl_size.txt
+    gcloud storage du -s ${input_bcl_directory} | awk '{print $1/1024/1024/1024}' > input_bcl_size.txt
   >>>
 
   output {
@@ -74,7 +74,7 @@ task run_bcl2fastq {
         set -e
         export TMPDIR=/tmp
 
-        gsutil -q -m cp -r ${input_bcl_directory} .
+	gcloud storage cp -r ${input_bcl_directory} .
 
         cd ${run_id}
 
@@ -85,7 +85,7 @@ task run_bcl2fastq {
 
         cd out
 
-        gsutil -q -m cp -r . ${output_directory}/${run_id}_fastqs/
+        gcloud storage cp -r . ${output_directory}/${run_id}_fastqs/
 
         if [ $? -eq 0 ]; then
             echo "Fastq files generated and copied successfully to ${output_directory}/${run_id}_fastqs/."
@@ -94,7 +94,7 @@ task run_bcl2fastq {
         fi
 
         if [ "${delete_input_bcl_directory}" = "true" ]; then
-            gsutil -q -m rm -r "${input_bcl_directory}"
+            gcloud storage rm -r "${input_bcl_directory}"
             if [ $? -eq 0 ]; then
                 echo "Input bcl folder has been successfully deleted!"
             else
