@@ -74,7 +74,7 @@ task run_bcl2fastq {
         set -e
         export TMPDIR=/tmp
 
-	gcloud storage cp -r ${input_bcl_directory} .
+        gcloud storage cp -r ${input_bcl_directory} .
 
         cd ${run_id}
 
