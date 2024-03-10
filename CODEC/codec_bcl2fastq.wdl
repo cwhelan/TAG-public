@@ -8,6 +8,7 @@ workflow codec_bcl2fastq {
         Int write_threads
         String memory = "128G"
         Int preemptible = 3
+        Int? barcode_mismatches
         Boolean delete_input_bcl_directory
     }
     call GetBclBucketSize {
@@ -20,6 +21,7 @@ workflow codec_bcl2fastq {
         input:
             input_bcl_directory = sub(input_bcl_directory, "/+$", ""),
             output_directory = sub(output_directory, "/+$", ""),
+            barcode_mismatches = barcode_mismatches,
             read_threads = read_threads,
             write_threads = write_threads,
             memory = memory,
@@ -58,6 +60,7 @@ task run_bcl2fastq {
     input {
         String input_bcl_directory
         String output_directory
+        Int? barcode_mismatches
         String memory
         Float input_bcl_size 
         Int disk_space = ceil(input_bcl_size * 1.5) + select_first([extra_disk, 0])
@@ -81,7 +84,8 @@ task run_bcl2fastq {
         bcl2fastq \
         --output-dir out \
         -w ~{write_threads} \
-        -r ~{read_threads}
+        -r ~{read_threads} \
+        ~{"--barcode-mismatches " + barcode_mismatches}
 
         cd out
 
